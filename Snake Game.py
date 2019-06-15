@@ -1,5 +1,5 @@
 import pygame
-from random import randint
+from random import randrange
 
 # Inicializando o Pygames
 
@@ -18,18 +18,22 @@ azul = (0, 0, 255)  # Cor RGB Azul
 vermelho = (255, 0, 0)  # Cor RGB Vermelha
 
 largura = 500  # Largura da tela
-altura = 500  # Altura da tela
+altura = 540  # Altura da tela
 tamanho = 10  # Define 10 pixels para o tamanho da cobra
+
+placar = [40, 40]
+pos_placar = [0, altura - placar[1], largura, placar[0]]
 
 relogio = pygame.time.Clock()
 fundo = pygame.display.set_mode((largura, altura))  # Criar janela do jogo
 pygame.display.set_caption("Jogo da Cobrinha")  # Definir  titulo da janela do jogo
 
-font = pygame.font.SysFont(None, 20)
 
-def texto(msg, cor):
+def texto(msg, cor, tam, x, y):
+    font = pygame.font.SysFont(None, tam)
     text1 = font.render(msg, True, cor)
-    fundo.blit(text1, [largura/5, altura/2])
+    fundo.blit(text1, [x, y])
+
 
 def cobra(CobraXY):
     # Cria um quadrado preto na posição x e y com 10 pixels de altura e 10 de largura
@@ -44,25 +48,20 @@ def maca(pos_x, pos_y):
 def jogo():
     sair = True
     fimdejogo = False
-    pos_x = randint(0,
-                    (largura - tamanho) / tamanho) * tamanho  # Define a posição inicial aleatoria do quadrado no eixo x
-    pos_y = randint(0,
-                    (altura - tamanho) / tamanho) * tamanho  # Define a posição inicial aleatoria do quadrado no eixo y
+    pos_x = randrange(0, largura - tamanho, tamanho)  # Define a posição inicial aleatoria do quadrado no eixo x
+    pos_y = randrange(0, altura - tamanho - placar[1], tamanho)  # Define a posição inicial aleatoria do quadrado no eixo y
     velocidade_x = 0  # Define a velocidade inicial do quadrado no eixo x
     velocidade_y = 0  # Define a velocidade inicial do quadrado no eixo y
 
-    maca_x = randint(0, (largura - tamanho) / tamanho) * tamanho
-    maca_y = randint(0, (altura - tamanho) / tamanho) * tamanho
+    maca_x = randrange(0, largura - tamanho, tamanho)
+    maca_y = randrange(0, largura - tamanho - placar[1], tamanho)
 
     CobraXY = []
     CobraComp = 1
+    pontos = 0
 
     while sair:
         while fimdejogo:
-            fundo.fill(branco)
-            texto("Fim de jogo! Para continuar tecle C ou S para sair", preto)
-            pygame.display.update()
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sair = False
@@ -72,8 +71,52 @@ def jogo():
                         fimdejogo = not fimdejogo
                         sair = False
                     elif event.key == pygame.K_c:
-                        jogo()
+                        sair = True
+                        fimdejogo = False
+                        pos_x = randrange(0, largura - tamanho,
+                                          tamanho)  # Define a posição inicial aleatoria do quadrado no eixo x
+                        pos_y = randrange(0, altura - tamanho,
+                                          tamanho)  # Define a posição inicial aleatoria do quadrado no eixo y
+                        velocidade_x = 0  # Define a velocidade inicial do quadrado no eixo x
+                        velocidade_y = 0  # Define a velocidade inicial do quadrado no eixo y
 
+                        maca_x = randrange(0, largura - tamanho, tamanho)
+                        maca_y = randrange(0, largura - tamanho - placar[1], tamanho)
+
+                        CobraXY = []
+                        CobraComp = 1
+                        pontos = 0
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    x = pygame.mouse.get_pos()[0]
+                    y = pygame.mouse.get_pos()[1]
+                    if 120 + 100 > x > 100 and 300 + 27 > y > 300:
+                        sair = True
+                        fimdejogo = False
+                        pos_x = randrange(0, largura - tamanho,
+                                          tamanho)  # Define a posição inicial aleatoria do quadrado no eixo x
+                        pos_y = randrange(0, altura - tamanho,
+                                          tamanho)  # Define a posição inicial aleatoria do quadrado no eixo y
+                        velocidade_x = 0  # Define a velocidade inicial do quadrado no eixo x
+                        velocidade_y = 0  # Define a velocidade inicial do quadrado no eixo y
+
+                        maca_x = randrange(0, largura - tamanho, tamanho)
+                        maca_y = randrange(0, largura - tamanho - placar[1], tamanho)
+
+                        CobraXY = []
+                        CobraComp = 1
+                        pontos = 0
+                    elif 300 + 100 > x > 300 and 300 + 27 > y > 300:
+                        fimdejogo = not fimdejogo
+                        sair = False
+            fundo.fill(branco)
+            texto("FIM DE JOGO!", vermelho, 50, largura / 3.8, 100)
+            texto("Pontuação Final: " + str(pontos), preto, 25, 180, 150)
+            pygame.draw.rect(fundo, preto, [120, 300, 100, 27])
+            texto("Continuar(C)", branco, 22, 122, 305)
+            pygame.draw.rect(fundo, preto, [300, 300, 100, 27])
+            texto("Sair(S)", branco, 22, 325, 305)
+            texto("Para continuar tecle C ou S para sair", preto, 22, largura / 4, altura / 2.3 + 20)
+            pygame.display.update()
         for event in pygame.event.get():
             # Habilita o "X" para fechar o jogos
             if event.type == pygame.QUIT:
@@ -96,40 +139,46 @@ def jogo():
                 elif event.key == pygame.K_r:
                     jogo()
 
-        fundo.fill(branco)  # Atualiza a cor de fundo para branco
+        if sair:
 
-        pos_x += velocidade_x
-        pos_y += velocidade_y
+            fundo.fill(branco)  # Atualiza a cor de fundo para branco
 
-        CobraInicio = [pos_x, pos_y]
-        CobraXY.append(CobraInicio)
+            pos_x += velocidade_x
+            pos_y += velocidade_y
 
-        if len(CobraXY) > CobraComp:
-            del CobraXY[0]
+            if pos_x == maca_x and pos_y == maca_y:
+                maca_x = randrange(0, largura - tamanho, tamanho)
+                maca_y = randrange(0, largura - tamanho, tamanho)
+                CobraComp += 1
+                pontos += 1
 
-        if any(Bloco == CobraInicio for Bloco in CobraXY[:-1]):
-            fimdejogo = not fimdejogo
+            # Faz com que o jogo feche caso o quadrado saia da tela
 
-        cobra(CobraXY)
+            if pos_x + tamanho > largura:
+                fimdejogo = not fimdejogo
+            elif pos_x + tamanho < 0:
+                fimdejogo = not fimdejogo
+            elif pos_y + tamanho > altura - placar[1]:
+                fimdejogo = not fimdejogo
+            elif pos_y + tamanho < 0:
+                fimdejogo = not fimdejogo
 
-        if pos_x == maca_x and pos_y == maca_y:
-            maca_x = randint(0, (largura - tamanho) / tamanho) * tamanho
-            maca_y = randint(0, (largura - tamanho) / tamanho) * tamanho
-            CobraComp += 1
+            CobraInicio = [pos_x, pos_y]
+            CobraXY.append(CobraInicio)
 
-        maca(maca_x, maca_y)
+            if len(CobraXY) > CobraComp:
+                del CobraXY[0]
 
-        # Faz com que o jogo feche caso o quadrado saia da tela
-        pygame.display.update()
-        relogio.tick(15)
-        if pos_x > largura:
-            fimdejogo = not fimdejogo
-        elif pos_x < 0:
-            fimdejogo = not fimdejogo
-        elif pos_y > altura:
-            fimdejogo = not fimdejogo
-        elif pos_y < 0:
-            fimdejogo = not fimdejogo
+            if any(Bloco == CobraInicio for Bloco in CobraXY[:-1]):
+                fimdejogo = not fimdejogo
+
+            pygame.draw.rect(fundo, preto, pos_placar)
+            texto("Pontuação: " + str(pontos), branco, 20, 10, altura - (placar[1] - 10))
+
+            cobra(CobraXY)
+            maca(maca_x, maca_y)
+            pygame.display.update()
+            relogio.tick(15)
 
 
 jogo()
