@@ -17,14 +17,19 @@ verde = (0, 255, 0)  # Cor RGB Verde
 azul = (0, 0, 255)  # Cor RGB Azul
 vermelho = (255, 0, 0)  # Cor RGB Vermelha
 
-largura = 700  # Largura da tela
-altura = 700  # Altura da tela
+largura = 500  # Largura da tela
+altura = 500  # Altura da tela
 tamanho = 10  # Define 10 pixels para o tamanho da cobra
 
 relogio = pygame.time.Clock()
 fundo = pygame.display.set_mode((largura, altura))  # Criar janela do jogo
 pygame.display.set_caption("Jogo da Cobrinha")  # Definir  titulo da janela do jogo
 
+font = pygame.font.SysFont(None, 20)
+
+def texto(msg, cor):
+    text1 = font.render(msg, True, cor)
+    fundo.blit(text1, [largura/5, altura/2])
 
 def cobra(CobraXY):
     # Cria um quadrado preto na posição x e y com 10 pixels de altura e 10 de largura
@@ -38,6 +43,7 @@ def maca(pos_x, pos_y):
 
 def jogo():
     sair = True
+    fimdejogo = False
     pos_x = randint(0,
                     (largura - tamanho) / tamanho) * tamanho  # Define a posição inicial aleatoria do quadrado no eixo x
     pos_y = randint(0,
@@ -52,8 +58,24 @@ def jogo():
     CobraComp = 1
 
     while sair:
+        while fimdejogo:
+            fundo.fill(branco)
+            texto("Fim de jogo! Para continuar tecle C ou S para sair", preto)
+            pygame.display.update()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sair = False
+                    fimdejogo = not fimdejogo
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_s:
+                        fimdejogo = not fimdejogo
+                        sair = False
+                    elif event.key == pygame.K_c:
+                        jogo()
+
         for event in pygame.event.get():
-            # Habilita o "X" para fechar o jogo
+            # Habilita o "X" para fechar o jogos
             if event.type == pygame.QUIT:
                 sair = False
 
@@ -71,6 +93,8 @@ def jogo():
                 elif event.key == pygame.K_DOWN and velocidade_y != -tamanho:
                     velocidade_x = 0
                     velocidade_y = tamanho
+                elif event.key == pygame.K_r:
+                    jogo()
 
         fundo.fill(branco)  # Atualiza a cor de fundo para branco
 
@@ -84,7 +108,7 @@ def jogo():
             del CobraXY[0]
 
         if any(Bloco == CobraInicio for Bloco in CobraXY[:-1]):
-            pass
+            fimdejogo = not fimdejogo
 
         cobra(CobraXY)
 
@@ -99,13 +123,13 @@ def jogo():
         pygame.display.update()
         relogio.tick(15)
         if pos_x > largura:
-            sair = False
+            fimdejogo = not fimdejogo
         elif pos_x < 0:
-            sair = False
+            fimdejogo = not fimdejogo
         elif pos_y > altura:
-            sair = False
+            fimdejogo = not fimdejogo
         elif pos_y < 0:
-            sair = False
+            fimdejogo = not fimdejogo
 
 
 jogo()
