@@ -178,7 +178,7 @@ def jogo():
             cobra(CobraXY)
             maca(maca_x, maca_y)
             pygame.display.update()
-            relogio.tick(15)
+            relogio.tick(10)
 
 
 jogo()
