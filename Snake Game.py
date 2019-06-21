@@ -28,7 +28,7 @@ relogio = pygame.time.Clock()
 fundo = pygame.display.set_mode((largura, altura))  # Criar janela do jogo
 pygame.display.set_caption("Jogo da Cobrinha")  # Definir  titulo da janela do jogo
 
-
+# Escreve uma mensagem com uma cor, tamanho e posição definida
 def texto(msg, cor, tam, x, y):
     font = pygame.font.SysFont(None, tam)
     text1 = font.render(msg, True, cor)
@@ -156,10 +156,13 @@ def jogo():
 
             if pos_x + tamanho > largura:
                 fimdejogo = not fimdejogo
+
             elif pos_x + tamanho < 0:
                 fimdejogo = not fimdejogo
+
             elif pos_y + tamanho > altura - placar[1]:
                 fimdejogo = not fimdejogo
+
             elif pos_y + tamanho < 0:
                 fimdejogo = not fimdejogo
 
